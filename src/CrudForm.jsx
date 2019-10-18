@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react'
 import { Segment, Form, Input, Label, Header, Icon, Button } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { createRegister } from './registerAction';
+import { message } from 'antd'
+import 'antd/dist/antd.css'
 
 const mapStateToProps = (state) => ({
     data: state.data
@@ -16,25 +18,40 @@ class CrudForm extends Component {
         email: '',
         username: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        status: false
     }
     handleChange = (event) => {
-        // if (event.target.name === 'confirmPassword') {
-        //     if (this.handleConfirmPassword(event.target.value)) {
-
-        //     }
-        // }
+        if (event.target.name === 'confirmPassword') {
+            if (this.handleConfirmPassword(event.target.value)) {
+                this.setState({
+                    status: true
+                })
+                message.success('Password Match')
+            } else {
+                this.setState({
+                    status: false
+                })
+                message.error('Password Not Match')
+            }
+        }
         this.setState({
             [event.target.name]: event.target.value
         })
     }
     hadleSubmit = (e) => {
         e.preventDefault()
-        const data=[
-            {fullName:this.state.fullName,nicNumber:this.state.nicNumber,email:this.state.email,username:this.state.username,password:this.state.password}
-        ]
-        console.log(data)
-        this.props.createRegister(data)
+        if (this.state.status) {
+            const data = [
+                { fullName: this.state.fullName, nicNumber: this.state.nicNumber, email: this.state.email, username: this.state.username, password: this.state.password }
+            ]
+            this.props.createRegister(data)
+            message.success('Registered Successfully')
+            window.location.reload()
+            return true
+        } else {
+            return false
+        }
     }
     handleConfirmPassword = (value) => {
         if (this.state.password !== value) {
