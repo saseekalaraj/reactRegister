@@ -1,10 +1,14 @@
 import React, { Component, Fragment } from 'react'
 import { Segment, Form, Input, Label, Header, Icon, Button } from 'semantic-ui-react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
+import { createRegister } from './registerAction';
 
 const mapStateToProps = (state) => ({
-    data: state.register.data
+    data: state.data
 })
+const mapDispathToProps = {
+    createRegister
+}
 class CrudForm extends Component {
     state = {
         fullName: '',
@@ -15,14 +19,22 @@ class CrudForm extends Component {
         confirmPassword: ''
     }
     handleChange = (event) => {
-        if (event.target.name === 'confirmPassword') {
-            if (this.handleConfirmPassword(event.target.value)) {
+        // if (event.target.name === 'confirmPassword') {
+        //     if (this.handleConfirmPassword(event.target.value)) {
 
-            }
-        }
+        //     }
+        // }
         this.setState({
             [event.target.name]: event.target.value
         })
+    }
+    hadleSubmit = (e) => {
+        e.preventDefault()
+        const data=[
+            {fullName:this.state.fullName,nicNumber:this.state.nicNumber,email:this.state.email,username:this.state.username,password:this.state.password}
+        ]
+        console.log(data)
+        this.props.createRegister(data)
     }
     handleConfirmPassword = (value) => {
         if (this.state.password !== value) {
@@ -33,14 +45,13 @@ class CrudForm extends Component {
     }
     render() {
         const { fullName, nicNumber, email, username, password, confirmPassword } = this.state
-        const {data} = this.props
         return (
             <Fragment>
                 <Segment color='blue' textAlign='center' >
                     <Header icon><Icon name='user' />Registation Form</Header>
                 </Segment>
                 <Segment color='blue'>
-                    <Form>
+                    <Form onSubmit={this.hadleSubmit}>
                         <Form.Field>
                             <Label color='blue' ribbon='left' style={{ bottom: 10 }}>Full Name</Label>
                             <Input placeholder="Enter Full Name" name='fullName' type='text' onChange={this.handleChange} value={fullName} />
@@ -81,4 +92,4 @@ class CrudForm extends Component {
         )
     }
 }
-export default connect(mapStateToProps)(CrudForm)
+export default connect(mapStateToProps, mapDispathToProps)(CrudForm)
